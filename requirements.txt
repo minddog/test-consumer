@@ -1,0 +1,4 @@
+Flask>=0.10.1
+kafka-python==0.9.3
+gevent
+mock==1.0.1
