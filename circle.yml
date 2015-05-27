@@ -1,0 +1,19 @@
+machine:
+  services:
+    - docker
+
+test:
+  override:
+    - nosetests --with-xunit --xunit-file=$CIRCLE_TEST_REPORTS/`date +'%Y-%M-%d-%H:%M:%S'`_xunit.xml
+
+  post:
+    - docker info
+    - docker build -t $DOCKER_USER/test-consumer .
+    - docker run -d -p 5000:5000 $DOCKER_USER/test-consumer
+
+deployment:
+  hub:
+    branch: master
+    commands:
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - docker push $DOCKER_USER/test-consumer
