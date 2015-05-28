@@ -10,4 +10,4 @@ RUN cd /data
 RUN virtualenv /data/.venv
 RUN /data/.venv/bin/pip install -r requirements.txt
 EXPOSE  5000
-CMD ["/data/.venv/bin/python consumer.py"]
+CMD ["/data/.venv/bin/python", "consumer.py"]
