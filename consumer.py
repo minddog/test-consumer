@@ -9,6 +9,7 @@ from kafka.common import BufferUnderflowError
 from kafka.consumer import SimpleConsumer
 from kafka.producer import SimpleProducer
 from gevent.monkey import patch_all; patch_all()
+import signal
 
 LOG_FORMAT='%(asctime)s.%(msecs)s:%(name)s:%(thread)d:%(levelname)s:%(process)d:%(message)s'
 logging.basicConfig(level=logging.DEBUG,
@@ -172,6 +173,8 @@ def main():
     producer = Producer()
     producer_event, consumer_event = gevent.spawn(producer.run), gevent.spawn(consumer.run)
     consumer_checker_event = gevent.spawn(consumer.background_check_time)
+    [gevent.signal(signal.SIGINT, gevent.kill, event) for event in producer_event, consumer_event, consumer_checker_event]
+    [gevent.signal(signal.SIGKILL, gevent.kill, event) for event in producer_event, consumer_event, consumer_checker_event]
     gevent.joinall((producer_event, consumer_event, consumer_checker_event))
 
 if __name__ == "__main__":
